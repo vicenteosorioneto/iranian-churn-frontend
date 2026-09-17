@@ -1,0 +1,124 @@
+"use client";
+
+import { useState } from "react";
+import axios from "axios";
+import { RestartAltRounded, TrendingUpRounded } from "@mui/icons-material";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { FEATURES, initialPredictionValues } from "@/constants/features";
+import api from "@/services/api";
+import type { PredictionField, PredictionRequest, PredictionResponse } from "@/types/prediction";
+import { PredictionResult } from "./PredictionResult";
+
+type FormValues = Record<PredictionField, string>;
+
+function createInitialValues(): FormValues {
+  return { ...initialPredictionValues } as FormValues;
+}
+
+export function PredictionForm() {
+  const [values, setValues] = useState<FormValues>(createInitialValues);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<PredictionResponse | null>(null);
+
+  const updateField = (field: PredictionField, value: string) => {
+    setValues((current) => ({ ...current, [field]: value }));
+    setResult(null);
+  };
+
+  const reset = () => {
+    setValues(createInitialValues());
+    setResult(null);
+    setError(null);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    const payload = Object.fromEntries(
+      FEATURES.map((feature) => [feature.apiName, Number(values[feature.apiName])]),
+    ) as unknown as PredictionRequest;
+
+    try {
+      const response = await api.post<PredictionResponse>("/predict", payload);
+      setResult(response.data);
+    } catch (requestError) {
+      setError(axios.isAxiosError(requestError) && requestError.response
+        ? "A API não conseguiu processar os dados. Revise os campos ou verifique o serviço."
+        : "Não foi possível conectar à API de previsão. Confirme se o backend está em execução.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Stack spacing={2.5}>
+      <Card>
+        <CardContent sx={{ p: { xs: 2, sm: 3 }, "&:last-child": { pb: { xs: 2, sm: 3 } } }}>
+          <Box mb={3}>
+            <Typography variant="h6">Dados do cliente</Typography>
+            <Typography variant="body2" color="text.secondary" mt={0.5}>
+              Preencha os 13 atributos conforme as definições do Iranian Churn Dataset.
+            </Typography>
+          </Box>
+          <Box component="form" onSubmit={handleSubmit}>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", xl: "repeat(3, 1fr)" }, gap: 2.5 }}>
+              {FEATURES.map((feature) => feature.options ? (
+                <FormControl key={feature.apiName} required fullWidth>
+                  <InputLabel id={`${feature.apiName}-label`}>{feature.label}</InputLabel>
+                  <Select
+                    labelId={`${feature.apiName}-label`}
+                    value={values[feature.apiName]}
+                    label={feature.label}
+                    onChange={(event) => updateField(feature.apiName, event.target.value)}
+                  >
+                    {feature.options.map((option) => <MenuItem key={option.value} value={String(option.value)}>{option.label}</MenuItem>)}
+                  </Select>
+                  <FormHelperText>{feature.description}</FormHelperText>
+                </FormControl>
+              ) : (
+                <TextField
+                  key={feature.apiName}
+                  required
+                  fullWidth
+                  type="number"
+                  label={feature.label}
+                  value={values[feature.apiName]}
+                  onChange={(event) => updateField(feature.apiName, event.target.value)}
+                  helperText={feature.description}
+                  slotProps={{ htmlInput: { min: feature.min, step: feature.step } }}
+                />
+              ))}
+            </Box>
+            {error && <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>}
+            <Stack direction={{ xs: "column-reverse", sm: "row" }} justifyContent="flex-end" spacing={1.5} mt={3}>
+              <Button type="button" variant="outlined" startIcon={<RestartAltRounded />} onClick={reset} disabled={loading}>Limpar campos</Button>
+              <Button type="submit" variant="contained" startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <TrendingUpRounded />} disabled={loading}>
+                {loading ? "Calculando..." : "Calcular risco de churn"}
+              </Button>
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
+      {result && <PredictionResult result={result} />}
+    </Stack>
+  );
+}
