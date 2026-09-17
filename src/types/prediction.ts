@@ -1,0 +1,24 @@
+export interface PredictionRequest {
+  "Call Failure": number;
+  "Subscription Length": number;
+  "Seconds of Use": number;
+  "Frequency of use": number;
+  "Frequency of SMS": number;
+  "Distinct Called Numbers": number;
+  Age: number;
+  "Customer Value": number;
+  Complains: number;
+  "Tariff Plan": number;
+  Status: number;
+  "Charge Amount": number;
+  "Age Group": number;
+}
+
+export interface PredictionResponse {
+  prediction: 0 | 1;
+  probability: number;
+  classification: string;
+  model: "logistic_regression" | "random_forest" | string;
+}
+
+export type PredictionField = keyof PredictionRequest;
