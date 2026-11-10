@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 import { PageHeader } from "@/components/common/PageHeader";
-import { ChartPlaceholder } from "@/components/charts/ChartPlaceholder";
+import { FeatureImportanceChart } from "@/components/charts/FeatureImportanceChart";
 import { FEATURES } from "@/constants/features";
 
 const typeLabels = {
@@ -13,10 +13,7 @@ export default function AnalysisPage() {
   return (
     <>
       <PageHeader eyebrow="EXPLORAÇÃO" title="Análise das variáveis" description="Conheça os atributos usados pelos modelos e reserve visualizações para a análise exploratória dos dados." />
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", xl: "1fr 1fr" }, gap: 2.5, mb: 2.5 }}>
-        <ChartPlaceholder title="Distribuição das variáveis" description="Histogramas e distribuições calculados pelo backend." minHeight={300} />
-        <ChartPlaceholder title="Relação com o churn" description="Comparação dos atributos em relação à variável-alvo." minHeight={300} />
-      </Box>
+      <FeatureImportanceChart />
       <Card>
         <CardContent sx={{ p: { xs: 2, sm: 3 }, "&:last-child": { pb: { xs: 2, sm: 3 } } }}>
           <Typography variant="h6">Dicionário de atributos</Typography>
