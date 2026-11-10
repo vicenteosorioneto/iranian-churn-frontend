@@ -16,9 +16,8 @@ export interface PredictionRequest {
 
 export interface PredictionResponse {
   prediction: 0 | 1;
-  probability: number;
-  classification: string;
-  model: "logistic_regression" | "random_forest" | string;
+  churn_probability: number | null;
+  model_name: "logistic_regression" | "random_forest";
 }
 
 export type PredictionField = keyof PredictionRequest;
