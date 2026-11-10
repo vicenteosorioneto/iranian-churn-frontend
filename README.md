@@ -15,10 +15,10 @@ Não há lógica de Machine Learning no frontend e nenhum resultado científico 
 ## Páginas
 
 - `/` — redireciona para a visão geral
-- `/dashboard` — indicadores e espaços para visualizações analíticas
-- `/models` — comparação de métricas, curva ROC e matrizes de confusão
+- `/dashboard` — indicadores e distribuições calculados pela API
+- `/models` — comparação de métricas, curvas ROC e matrizes de confusão reais
 - `/prediction` — formulário com os 13 atributos e apresentação da resposta do modelo
-- `/analysis` — catálogo dos atributos e espaços para análise exploratória
+- `/analysis` — catálogo dos atributos e importância por permutação do Random Forest
 
 ## Configuração
 
@@ -64,7 +64,7 @@ npm start
 - `GET /api/models/metrics` — métricas comparativas dos modelos
 - `POST /api/predict` — inferência a partir dos 13 atributos
 
-Enquanto a API estiver offline, a interface mantém placeholders explícitos, apresenta estados de carregamento e mensagens de conexão sem inventar valores. Os indicadores e gráficos analíticos dependem da definição dos respectivos endpoints no backend.
+Enquanto a API estiver offline, a interface mantém placeholders explícitos, apresenta estados de carregamento e mensagens de conexão sem inventar valores. Os gráficos e indicadores são carregados da API; se o dataset ou os artefatos estiverem ausentes, a aplicação mostra um aviso em vez de valores fictícios.
 
 ## Organização
 
@@ -77,3 +77,14 @@ src/
 ├── types/         # contratos TypeScript da API
 └── theme.ts       # tema global do Material UI
 ```
+
+## Endpoints consumidos
+
+- `GET /api/analytics/summary`: totais de clientes, taxa de churn e distribuições agrupadas;
+- `GET /api/models/metrics`: métricas, pontos das curvas ROC e matrizes de confusão;
+- `GET /api/models/feature-importance`: importâncias medidas por permutação no conjunto de teste;
+- `POST /api/predict`: classe prevista, probabilidade e modelo escolhido pelo backend.
+
+Execute primeiro `python -m app.ml.train` no repositório backend, com `data/raw/iranian_churn.csv` instalado. A API FastAPI fica em `http://localhost:8000` e o Next.js em `http://localhost:3000`. Para validar o frontend execute `npm run typecheck` e `npm run build`.
+
+A previsão e os gráficos não simulam dados: nenhum resultado aparece até que os artefatos reais sejam disponibilizados pelo backend.
