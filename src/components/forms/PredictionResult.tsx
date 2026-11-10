@@ -15,7 +15,7 @@ export function PredictionResult({ result }: { result: PredictionResponse }) {
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
           <Box>
             <Typography variant="overline" color="text.secondary">RESULTADO DA PREDIÇÃO</Typography>
-            <Typography variant="h5" mt={0.25}>{result.classification}</Typography>
+            <Typography variant="h5" mt={0.25}>{result.prediction === 1 ? "Cliente com risco de churn" : "Cliente com menor risco de churn"}</Typography>
           </Box>
           <CheckCircleOutlined color={result.prediction === 1 ? "warning" : "success"} sx={{ fontSize: 42 }} />
         </Stack>
@@ -26,14 +26,14 @@ export function PredictionResult({ result }: { result: PredictionResponse }) {
               <PercentOutlined fontSize="small" />
               <Typography variant="body2">Probabilidade</Typography>
             </Stack>
-            <Typography variant="h5" mt={1}>{(result.probability * 100).toFixed(1)}%</Typography>
+            <Typography variant="h5" mt={1}>{result.churn_probability === null ? "Indisponível" : `${(result.churn_probability * 100).toFixed(1)}%`}%</Typography>
           </Box>
           <Box sx={{ flex: 1, p: 2, borderRadius: 2, bgcolor: "#f8f9fc" }}>
             <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
               <ModelTrainingOutlined fontSize="small" />
               <Typography variant="body2">Modelo utilizado</Typography>
             </Stack>
-            <Chip label={modelLabel(result.model)} color="primary" variant="outlined" sx={{ mt: 1 }} />
+            <Chip label={modelLabel(result.model_name)} color="primary" variant="outlined" sx={{ mt: 1 }} />
           </Box>
         </Stack>
         <Typography variant="caption" color="text.secondary" display="block" mt={2}>
