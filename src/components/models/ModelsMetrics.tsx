@@ -23,7 +23,7 @@ import {
 import api from "@/services/api";
 import type { ModelsComparison } from "@/types/metrics";
 import { MetricsChart } from "@/components/charts/MetricsChart";
-import { ChartPlaceholder } from "@/components/charts/ChartPlaceholder";
+import { ModelEvaluationCharts } from "@/components/models/ModelEvaluationCharts";
 
 const rows = [
   ["Accuracy", "accuracy"],
@@ -136,12 +136,9 @@ export function ModelsMetrics() {
             )}
           </CardContent>
         </Card>
-        <ChartPlaceholder title="Curva ROC" description="Comparação entre taxa de verdadeiros e falsos positivos." minHeight={240} />
+
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" }, gap: 2.5 }}>
-        <ChartPlaceholder title="Matriz de confusão — Regressão Logística" description="Distribuição de acertos e erros por classe." minHeight={220} />
-        <ChartPlaceholder title="Matriz de confusão — Random Forest" description="Distribuição de acertos e erros por classe." minHeight={220} />
-      </Box>
+      {data && !loading && <ModelEvaluationCharts data={data} />}
     </>
   );
 }
