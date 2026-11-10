@@ -26,7 +26,7 @@ export function PredictionResult({ result }: { result: PredictionResponse }) {
               <PercentOutlined fontSize="small" />
               <Typography variant="body2">Probabilidade</Typography>
             </Stack>
-            <Typography variant="h5" mt={1}>{result.churn_probability === null ? "Indisponível" : `${(result.churn_probability * 100).toFixed(1)}%`}%</Typography>
+            <Typography variant="h5" mt={1}>{result.churn_probability === null ? "Indisponível" : `${(result.churn_probability * 100).toFixed(1)}%`}</Typography>
           </Box>
           <Box sx={{ flex: 1, p: 2, borderRadius: 2, bgcolor: "#f8f9fc" }}>
             <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
