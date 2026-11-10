@@ -29,7 +29,7 @@ const rows = [
   ["Accuracy", "accuracy"],
   ["Precision", "precision"],
   ["Recall", "recall"],
-  ["F1-score", "f1_score"],
+  ["F1-score", "f1"],
   ["ROC-AUC", "roc_auc"],
 ] as const;
 
