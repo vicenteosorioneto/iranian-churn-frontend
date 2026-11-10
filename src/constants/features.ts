@@ -27,7 +27,7 @@ export const FEATURES: readonly FeatureConfig[] = [
   { apiName: "Complains", label: "Possui reclamação?", type: "categorical", description: "Registro de reclamação do cliente", options: [{ value: 0, label: "Não" }, { value: 1, label: "Sim" }] },
   { apiName: "Tariff Plan", label: "Plano tarifário", type: "categorical", description: "Código do plano tarifário", options: [{ value: 1, label: "Plano 1" }, { value: 2, label: "Plano 2" }] },
   { apiName: "Status", label: "Status do cliente", type: "categorical", description: "Código de status no conjunto de dados", options: [{ value: 1, label: "Status 1" }, { value: 2, label: "Status 2" }] },
-  { apiName: "Charge Amount", label: "Faixa de cobrança", type: "ordinal", description: "Categoria ordinal do valor cobrado", options: Array.from({ length: 10 }, (_, value) => ({ value, label: `Nível ${value}` })) },
+  { apiName: "Charge Amount", label: "Faixa de cobrança", type: "ordinal", description: "Categoria ordinal do valor cobrado", options: Array.from({ length: 11 }, (_, value) => ({ value, label: `Nível ${value}` })) },
   { apiName: "Age Group", label: "Faixa etária", type: "ordinal", description: "Grupo etário codificado no conjunto de dados", options: Array.from({ length: 5 }, (_, index) => ({ value: index + 1, label: `Grupo ${index + 1}` })) },
 ] as const;
 
