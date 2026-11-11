@@ -117,7 +117,56 @@ export function PredictionForm() {
               Preencha os 13 atributos conforme as definições do Iranian Churn Dataset.
             </Typography>
           </Box>
+          <Box sx={{ p: 2, mb: 3, bgcolor: "primary.light", borderRadius: 2 }}>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}
+              alignItems={{ sm: "center" }} justifyContent="space-between">
+              <Box>
+                <Typography fontWeight={700}>Exemplos reais para demonstrar</Typography>
+                <Typography variant="body2">Carregue observações anônimas da base e calcule o risco.</Typography>
+              </Box>
+              <Button variant="outlined" onClick={() => void loadExamples()}>
+                Carregar exemplos da base
+              </Button>
+            </Stack>
+            {!!exampleError && <Alert severity="warning" sx={{ mt: 2 }}>{exampleError}</Alert>}
+            {!!examples.length && <Stack direction="row" flexWrap="wrap" gap={1} mt={2}>
+              {examples.map((example, index) => <Chip key={index}
+                color={selectedExample === index ? "primary" : "default"}
+                variant={selectedExample === index ? "filled" : "outlined"}
+                label={"Exemplo observado: " + example.label}
+                onClick={() => selectExample(index)}
+              />)}
+            </Stack>}
+            {selectedExample !== null && <Typography variant="caption" color="text.secondary" display="block" mt={1}>
+              Observação da base, não necessariamente do conjunto de teste.
+              A comparação não constitui validação independente.
+            </Typography>}
+          </Box>
           <Box component="form" onSubmit={handleSubmit}>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5, mb: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel id="prediction-model-label">Modelo de Machine Learning</InputLabel>
+                <Select labelId="prediction-model-label" label="Modelo de Machine Learning"
+                  value={model} onChange={event => { setModel(event.target.value as typeof model); setResult(null); }}>
+                  <MenuItem value="random_forest">Random Forest</MenuItem>
+                  <MenuItem value="logistic_regression">Regressão Logística</MenuItem>
+                </Select>
+                <FormHelperText>Compare as previsões de cada algoritmo.</FormHelperText>
+              </FormControl>
+              <Box>
+                <Typography variant="body2" fontWeight={700}>
+                  Limiar de decisão: {(threshold * 100).toFixed(0)}%
+                </Typography>
+                <Slider aria-label="Limiar de decisão" value={threshold}
+                  min={0.05} max={0.95} step={0.05} valueLabelDisplay="auto"
+                  onChange={(_, value) => { setThreshold(value as number); setResult(null); }}
+                  marks={[{ value: 0.2, label: "20%" }, { value: 0.5, label: "50%" }, { value: 0.8, label: "80%" }]}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  Um limiar menor sinaliza mais clientes. A probabilidade do modelo não muda.
+                </Typography>
+              </Box>
+            </Box>
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", xl: "repeat(3, 1fr)" }, gap: 2.5 }}>
               {FEATURES.map((feature) => feature.options ? (
                 <FormControl key={feature.apiName} required fullWidth>
