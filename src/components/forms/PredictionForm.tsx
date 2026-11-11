@@ -18,6 +18,8 @@ import {
   Stack,
   TextField,
   Typography,
+  Slider,
+  Chip,
 } from "@mui/material";
 import { FEATURES, initialPredictionValues } from "@/constants/features";
 import api from "@/services/api";
@@ -32,6 +34,13 @@ function createInitialValues(): FormValues {
 
 export function PredictionForm() {
   const [values, setValues] = useState<FormValues>(createInitialValues);
+  const [model, setModel] = useState<"random_forest" | "logistic_regression">("random_forest");
+  const [threshold, setThreshold] = useState(0.5);
+  const [examples, setExamples] = useState<Array<{
+    label: string; observed_churn: number; features: Record<string, number>;
+  }>>([]);
+  const [selectedExample, setSelectedExample] = useState<number | null>(null);
+  const [exampleError, setExampleError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PredictionResponse | null>(null);
@@ -39,10 +48,38 @@ export function PredictionForm() {
   const updateField = (field: PredictionField, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
     setResult(null);
+    setSelectedExample(null);
   };
 
   const reset = () => {
     setValues(createInitialValues());
+    setResult(null);
+    setError(null);
+    setModel("random_forest");
+    setThreshold(0.5);
+    setSelectedExample(null);
+  };
+
+  const loadExamples = async () => {
+    setExampleError("");
+    try {
+      const { data } = await api.get<typeof examples>("/analytics/examples");
+      setExamples(data);
+      if (!data.length) setExampleError("A base não possui exemplos disponíveis.");
+    } catch {
+      setExampleError("Não foi possível carregar exemplos reais. Verifique a API.");
+    }
+  };
+
+  const selectExample = (index: number) => {
+    const example = examples[index];
+    if (!example) return;
+    const next = {} as FormValues;
+    for (const feature of FEATURES) {
+      next[feature.apiName] = String(example.features[feature.apiName]);
+    }
+    setValues(next);
+    setSelectedExample(index);
     setResult(null);
     setError(null);
   };
@@ -56,9 +93,10 @@ export function PredictionForm() {
     const payload = Object.fromEntries(
       FEATURES.map((feature) => [feature.apiName, Number(values[feature.apiName])]),
     ) as unknown as PredictionRequest;
+    const request = { ...payload, model_name: model, threshold };
 
     try {
-      const response = await api.post<PredictionResponse>("/predict", payload);
+      const response = await api.post<PredictionResponse>("/predict", request);
       setResult(response.data);
     } catch (requestError) {
       setError(axios.isAxiosError(requestError) && requestError.response
