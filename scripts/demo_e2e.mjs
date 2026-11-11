@@ -41,6 +41,8 @@ try {
   await page.getByText("Exemplo observado: Cancelou").waitFor({ timeout: 30000 });
   await page.getByText("Exemplo observado: Cancelou").click();
   await page.getByRole("button", { name: "Calcular risco de churn" }).click();
+  console.log("INVALID INPUTS:", await page.locator("input:invalid").count());
+
   await page.getByText("RESULTADO DA PREDIÇÃO").waitFor({ timeout: 30000 });
   await page.screenshot({ path: path.join(screenshots, "04-previsao.png"), fullPage: true });
 
