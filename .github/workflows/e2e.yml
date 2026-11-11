@@ -39,7 +39,8 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           echo 'NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api' > .env.local
-          npm run dev >/tmp/churn_frontend.log 2>&1 &
+          npm run build
+          npm start >/tmp/churn_frontend.log 2>&1 &
           for i in {1..60}; do curl -fsS http://127.0.0.1:3000/dashboard >/dev/null && break || sleep 2; done
       - name: Executar demo real e gravar video
         env:
