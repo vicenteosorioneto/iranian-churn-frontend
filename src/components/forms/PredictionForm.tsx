@@ -191,7 +191,7 @@ export function PredictionForm() {
                   value={values[feature.apiName]}
                   onChange={(event) => updateField(feature.apiName, event.target.value)}
                   helperText={feature.description}
-                  slotProps={{ htmlInput: { min: feature.min, step: feature.step } }}
+                  slotProps={{ htmlInput: { min: feature.min, step: "any" } }}
                 />
               ))}
             </Box>
