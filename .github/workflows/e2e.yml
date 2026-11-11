@@ -44,7 +44,14 @@ jobs:
       - name: Executar demo real e gravar video
         env:
           DEMO_FRONTEND_URL: http://127.0.0.1:3000
-        run: node scripts/demo_e2e.mjs
+        run: |
+          curl -fsS http://127.0.0.1:8000/api/analytics/summary | head -c 600
+          node scripts/demo_e2e.mjs
+      - name: Diagnostico dos servidores
+        if: always()
+        run: |
+          tail -n 70 /tmp/churn_backend.log || true
+          tail -n 70 /tmp/churn_frontend.log || true
       - name: Evidencias e video da demo
         if: always()
         uses: actions/upload-artifact@v4
