@@ -124,7 +124,7 @@ export function ModelsMetrics() {
         <Card>
           <CardContent sx={{ p: 2.5 }}>
             <Typography variant="h6" fontSize={16}>Comparação visual das métricas</Typography>
-            <Typography variant="body2" color="text.secondary" mb={2}>Desempenho relativo dos modelos.</Typography>
+            <Typography variant="body2" color="text.secondary" mb={2}>Cada grupo de barras é uma métrica; azul = Regressão Logística, verde = Random Forest.</Typography>
             {loading ? (
               <Skeleton variant="rounded" height={310} />
             ) : data ? (
