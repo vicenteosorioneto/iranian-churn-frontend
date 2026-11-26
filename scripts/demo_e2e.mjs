@@ -33,7 +33,7 @@ try {
   await page.screenshot({ path: path.join(screenshots, "02-modelos.png"), fullPage: true });
 
   await page.goto(base + "/analysis", { waitUntil: "networkidle" });
-  await page.getByText("Importância das variáveis — Random Forest").waitFor({ timeout: 30000 });
+  await page.getByText("Quais informações o modelo mais usa para prever o cancelamento?").waitFor({ timeout: 30000 });
   await page.screenshot({ path: path.join(screenshots, "03-analise.png"), fullPage: true });
 
   await page.goto(base + "/prediction", { waitUntil: "networkidle" });
