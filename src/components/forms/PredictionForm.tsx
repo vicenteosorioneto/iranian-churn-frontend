@@ -20,13 +20,20 @@ import {
   Typography,
   Slider,
   Chip,
+  InputAdornment,
 } from "@mui/material";
-import { FEATURES, initialPredictionValues } from "@/constants/features";
+import { AGE_BY_GROUP, FEATURES, initialPredictionValues } from "@/constants/features";
 import api from "@/services/api";
 import type { PredictionField, PredictionRequest, PredictionResponse } from "@/types/prediction";
 import { PredictionResult } from "./PredictionResult";
 
 type FormValues = Record<PredictionField, string>;
+
+function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.round((seconds % 3600) / 60);
+  return hours === 0 ? `${minutes} min` : `${hours} h ${minutes} min`;
+}
 
 function createInitialValues(): FormValues {
   return { ...initialPredictionValues } as FormValues;
@@ -46,7 +53,16 @@ export function PredictionForm() {
   const [result, setResult] = useState<PredictionResponse | null>(null);
 
   const updateField = (field: PredictionField, value: string) => {
-    setValues((current) => ({ ...current, [field]: value }));
+    setValues((current) => {
+      const next = { ...current, [field]: value };
+      // Age and age group always come together in the dataset; keep them in sync.
+      if (field === "Age Group" && AGE_BY_GROUP[Number(value)]) next.Age = String(AGE_BY_GROUP[Number(value)]);
+      if (field === "Age") {
+        const group = Object.entries(AGE_BY_GROUP).find(([, age]) => String(age) === value);
+        if (group) next["Age Group"] = group[0];
+      }
+      return next;
+    });
     setResult(null);
     setSelectedExample(null);
   };
@@ -114,7 +130,8 @@ export function PredictionForm() {
           <Box mb={3}>
             <Typography variant="h6">Dados do cliente</Typography>
             <Typography variant="body2" color="text.secondary" mt={0.5}>
-              Preencha os 13 atributos conforme as definições do Iranian Churn Dataset.
+              Preencha os 13 dados do cliente. Cada campo explica o que significa e mostra a faixa de valores encontrada na base.
+              Os números de uso (ligações, SMS, tempo e falhas) são totais do período analisado na base.
             </Typography>
           </Box>
           <Box sx={{ p: 2, mb: 3, bgcolor: "primary.light", borderRadius: 2 }}>
@@ -190,8 +207,16 @@ export function PredictionForm() {
                   label={feature.label}
                   value={values[feature.apiName]}
                   onChange={(event) => updateField(feature.apiName, event.target.value)}
-                  helperText={feature.description}
-                  slotProps={{ htmlInput: { min: feature.min, step: "any" } }}
+                  helperText={<>
+                    {feature.description}
+                    {feature.range && <><br />{feature.range}</>}
+                    {feature.apiName === "Seconds of Use" && Number(values[feature.apiName]) > 0 &&
+                      <><br /><strong>= {formatDuration(Number(values[feature.apiName]))}</strong></>}
+                  </>}
+                  slotProps={{
+                    htmlInput: { min: feature.min, step: "any" },
+                    input: feature.unit ? { endAdornment: <InputAdornment position="end">{feature.unit}</InputAdornment> } : undefined,
+                  }}
                 />
               ))}
             </Box>
