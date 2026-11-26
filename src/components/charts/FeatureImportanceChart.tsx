@@ -50,7 +50,7 @@ export function FeatureImportanceChart() {
     <Typography variant="h6" mb={1}>Quais informações o modelo mais usa para prever o cancelamento?</Typography>
     <Typography variant="body2" color="text.secondary" mb={2}>
       Para cada variável, embaralhamos seus valores e medimos quanto o Random Forest piora (queda na ROC-AUC).
-      <strong> Barra maior = o modelo depende mais dessa informação.</strong> Barra perto de zero = o modelo quase não a usa.
+      <strong> Barra maior = o modelo depende mais dessa informação.</strong> Barra perto de zero (ou levemente negativa) = o modelo quase não usa essa informação.
       Isso mostra dependência do modelo, não causa do cancelamento.
     </Typography>
     {loading && <CircularProgress size={23}/>}
